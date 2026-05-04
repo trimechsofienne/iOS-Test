@@ -33,7 +33,7 @@
 		4061637B2F98F25E008F3A80 /* Exceptions for "TheGoodCorner" folder in "TheGoodCorner" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
+				Resources/Info.plist,
 			);
 			target = 4061630C2F98EFCC008F3A80 /* TheGoodCorner */;
 		};
@@ -410,7 +410,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = TheGoodCorner/Info.plist;
+				INFOPLIST_FILE = TheGoodCorner/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -437,7 +437,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = TheGoodCorner/Info.plist;
+				INFOPLIST_FILE = TheGoodCorner/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
