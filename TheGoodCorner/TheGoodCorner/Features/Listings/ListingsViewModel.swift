@@ -15,37 +15,37 @@ import Combine
 /// All state mutations happen on the MainActor.
 @MainActor
 final class ListingsViewModel: ObservableObject {
-
+    
     // MARK: - Published Properties
-
+    
     @Published private(set) var state: ViewState<[Listing]> = .idle
     @Published private(set) var categories: [Category] = []
     @Published var selectedCategory: Category?
     @Published var searchQuery: String = ""
-
+    
     // MARK: - Private Properties
-
+    
     private let repository: ListingRepositoryProtocol
     private var categoryMap: [Int: String] = [:]
     private var currentListings: [Listing] = []
     private var loadTask: Task<Void, Never>?
     private var cancellables = Set<AnyCancellable>()
-
+    
     /// Base URL for constructing full image URLs from relative paths.
     let baseURL: URL
-
+    
     // MARK: - Init
-
+    
     init(repository: ListingRepositoryProtocol, baseURL: URL) {
         self.repository = repository
         self.baseURL = baseURL
         setupSearchDebounce()
     }
-
+    
     deinit {
         loadTask?.cancel()
     }
-
+    
     private func setupSearchDebounce() {
         $searchQuery
             .dropFirst()
@@ -56,9 +56,9 @@ final class ListingsViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
-
+    
     // MARK: - Computed Properties
-
+    
     /// Listings filtered by the selected category.
     var filteredListings: [Listing] {
         guard let selected = selectedCategory else {
@@ -66,14 +66,14 @@ final class ListingsViewModel: ObservableObject {
         }
         return currentListings.filter { $0.categoryId == selected.id }
     }
-
+    
     // MARK: - Public Methods
-
+    
     /// Returns the category name for a listing, or fallback if unknown.
     func categoryName(for listing: Listing) -> String {
         categoryMap[listing.categoryId] ?? L10n.unknownCategory
     }
-
+    
     /// Performs a network search with the given query.
     private func performSearch(query: String) {
         loadTask?.cancel()
@@ -82,11 +82,10 @@ final class ListingsViewModel: ObservableObject {
             load()
             return
         }
-
+        
         state = .loading
         loadTask = Task {
             do {
-                // If categories are missing, fetch them in parallel
                 if categories.isEmpty {
                     async let searchTask = repository.searchListings(query: query)
                     async let categoriesTask = repository.fetchCategories()
@@ -113,22 +112,22 @@ final class ListingsViewModel: ObservableObject {
             }
         }
     }
-
+    
     /// Loads all listings and categories in parallel.
     func load() {
         loadTask?.cancel()
         state = .loading
-
+        
         loadTask = Task {
             do {
                 async let feedTask = repository.fetchAllListings()
                 async let categoriesTask = repository.fetchCategories()
-
+                
                 let feed = try await feedTask
                 let fetchedCategories = try await categoriesTask
-
+                
                 guard !Task.isCancelled else { return }
-
+                
                 currentListings = feed.items
                 categories = fetchedCategories
                 categoryMap = Dictionary(
@@ -141,12 +140,12 @@ final class ListingsViewModel: ObservableObject {
             }
         }
     }
-
+    
     /// Retries a failed load.
     func retry() {
         load()
     }
-
+    
     /// Updates the category filter.
     func selectCategory(_ category: Category?) {
         selectedCategory = category
