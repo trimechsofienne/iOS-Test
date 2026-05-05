@@ -29,7 +29,11 @@ struct ListingsView: View {
                 .navigationDestination(for: AppCoordinator.Route.self) { route in
                     switch route {
                     case .detail(let listing, let categoryName):
-                        DetailPlaceholderView(title: listing.title)
+                        DetailView(
+                            listing: listing,
+                            categoryName: categoryName,
+                            baseURL: coordinator.baseURL
+                        )
                     }
                 }
         }
@@ -113,18 +117,5 @@ struct ListingsView: View {
             }
             .listStyle(.plain)
         }
-    }
-}
-
-// MARK: - Temporary Placeholder
-
-/// Temporary placeholder until DetailView is implemented in a later commit.
-private struct DetailPlaceholderView: View {
-    let title: String
-
-    var body: some View {
-        Text(title)
-            .navigationTitle(title)
-            .navigationBarTitleDisplayMode(.inline)
     }
 }
