@@ -47,6 +47,7 @@ struct DetailView: View {
         .clipped()
         .accessibilityLabel(listing.imagesURL != nil ? L10n.accessibilityPhotoAvailable : L10n.accessibilityPhotoUnavailable)
         .accessibilityHidden(listing.imagesURL == nil)
+        .accessibilityAddTraits(.isImage)
     }
 
     private var contentSection: some View {
@@ -58,6 +59,7 @@ struct DetailView: View {
             Text(listing.title)
                 .font(Typography.screenTitle)
                 .fixedSize(horizontal: false, vertical: true)
+                .accessibilityAddTraits(.isHeader)
 
             Text(PriceFormatter.format(listing.price))
                 .font(Typography.price)
@@ -85,6 +87,7 @@ struct DetailView: View {
 
             Text(L10n.descriptionTitle)
                 .font(Typography.sectionTitle)
+                .accessibilityAddTraits(.isHeader)
 
             Text(listing.description)
                 .font(Typography.body)
