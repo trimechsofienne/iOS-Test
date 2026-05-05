@@ -26,6 +26,7 @@ struct ListingsView: View {
                 .navigationTitle(L10n.listingsTitle)
                 .task { viewModel.load() }
                 .refreshable { viewModel.load() }
+                .searchable(text: $viewModel.searchQuery, prompt: L10n.searchPlaceholder)
                 .navigationDestination(for: AppCoordinator.Route.self) { route in
                     switch route {
                     case .detail(let listing, let categoryName):

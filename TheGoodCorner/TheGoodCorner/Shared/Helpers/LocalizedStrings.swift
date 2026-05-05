@@ -26,6 +26,7 @@ enum L10n {
     // MARK: - Listing
 
     static let urgent = String(localized: "URGENT")
+    static let searchPlaceholder = String(localized: "Rechercher une annonce")
 
     // MARK: - States
 

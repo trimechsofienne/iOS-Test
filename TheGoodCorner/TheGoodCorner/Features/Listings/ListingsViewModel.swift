@@ -21,6 +21,7 @@ final class ListingsViewModel: ObservableObject {
     @Published private(set) var state: ViewState<[Listing]> = .idle
     @Published private(set) var categories: [Category] = []
     @Published var selectedCategory: Category?
+    @Published var searchQuery: String = ""
 
     // MARK: - Private Properties
 
@@ -28,6 +29,7 @@ final class ListingsViewModel: ObservableObject {
     private var categoryMap: [Int: String] = [:]
     private var currentListings: [Listing] = []
     private var loadTask: Task<Void, Never>?
+    private var cancellables = Set<AnyCancellable>()
 
     /// Base URL for constructing full image URLs from relative paths.
     let baseURL: URL
@@ -37,10 +39,22 @@ final class ListingsViewModel: ObservableObject {
     init(repository: ListingRepositoryProtocol, baseURL: URL) {
         self.repository = repository
         self.baseURL = baseURL
+        setupSearchDebounce()
     }
 
     deinit {
         loadTask?.cancel()
+    }
+
+    private func setupSearchDebounce() {
+        $searchQuery
+            .dropFirst()
+            .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+            .removeDuplicates()
+            .sink { [weak self] query in
+                self?.performSearch(query: query)
+            }
+            .store(in: &cancellables)
     }
 
     // MARK: - Computed Properties
@@ -58,6 +72,46 @@ final class ListingsViewModel: ObservableObject {
     /// Returns the category name for a listing, or fallback if unknown.
     func categoryName(for listing: Listing) -> String {
         categoryMap[listing.categoryId] ?? L10n.unknownCategory
+    }
+
+    /// Performs a network search with the given query.
+    private func performSearch(query: String) {
+        loadTask?.cancel()
+        
+        guard !query.isEmpty else {
+            load()
+            return
+        }
+
+        state = .loading
+        loadTask = Task {
+            do {
+                // If categories are missing, fetch them in parallel
+                if categories.isEmpty {
+                    async let searchTask = repository.searchListings(query: query)
+                    async let categoriesTask = repository.fetchCategories()
+                    
+                    let feed = try await searchTask
+                    let fetchedCategories = try await categoriesTask
+                    
+                    guard !Task.isCancelled else { return }
+                    
+                    categories = fetchedCategories
+                    categoryMap = Dictionary(uniqueKeysWithValues: fetchedCategories.map { ($0.id, $0.name) })
+                    currentListings = feed.items
+                    state = .loaded(feed.items)
+                } else {
+                    let feed = try await repository.searchListings(query: query)
+                    guard !Task.isCancelled else { return }
+                    
+                    currentListings = feed.items
+                    state = .loaded(feed.items)
+                }
+            } catch {
+                guard !Task.isCancelled else { return }
+                state = .error(error.localizedDescription)
+            }
+        }
     }
 
     /// Loads all listings and categories in parallel.
