@@ -25,5 +25,6 @@ enum Spacing {
     static let rowCornerRadius: CGFloat = 8
     static let chipHorizontalPadding: CGFloat = 14
     static let chipVerticalPadding: CGFloat = 7
+    static let categoryBarHeight: CGFloat = 50
     static let detailHeaderImageHeight: CGFloat = 250
 }

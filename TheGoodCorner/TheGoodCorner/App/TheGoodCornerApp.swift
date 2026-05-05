@@ -9,9 +9,15 @@ import SwiftUI
 
 @main
 struct TheGoodCornerApp: App {
+
+    @StateObject private var coordinator = DIContainer.shared.makeCoordinator()
+
     var body: some Scene {
         WindowGroup {
-            Text("TheGoodCorner")
+            ListingsView(
+                viewModel: DIContainer.shared.makeListingsViewModel(),
+                coordinator: coordinator
+            )
         }
     }
 }

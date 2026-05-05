@@ -38,4 +38,9 @@ final class DIContainer {
     func makeCoordinator() -> AppCoordinator {
         AppCoordinator(baseURL: baseURL)
     }
+
+    @MainActor
+    func makeListingsViewModel() -> ListingsViewModel {
+        ListingsViewModel(repository: repository, baseURL: baseURL)
+    }
 }
