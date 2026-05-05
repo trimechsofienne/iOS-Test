@@ -8,7 +8,7 @@
 import Foundation
 
 /// API feed envelope returned by `GET /listings`.
-struct ListingFeed: Decodable, Equatable, Sendable {
+nonisolated struct ListingFeed: Decodable, Equatable, Sendable {
 
     // MARK: - Properties
 

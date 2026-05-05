@@ -8,7 +8,7 @@
 import Foundation
 
 /// Core data model representing a classified ad.
-struct Listing: Identifiable, Decodable, Equatable, Hashable, Sendable {
+nonisolated struct Listing: Identifiable, Decodable, Equatable, Hashable, Sendable {
 
     // MARK: - Properties
 

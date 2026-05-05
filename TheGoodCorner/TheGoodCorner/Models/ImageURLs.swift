@@ -8,7 +8,7 @@
 import Foundation
 
 /// Image paths returned by the API.
-struct ImageURLs: Decodable, Equatable, Hashable, Sendable {
+nonisolated struct ImageURLs: Decodable, Equatable, Hashable, Sendable {
     let small: String?
     let thumb: String?
 }
